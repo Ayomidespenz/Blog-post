@@ -20,23 +20,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $image_url = null;
             if ($image && $image['error'] === UPLOAD_ERR_OK) {
                 $allowed_types = ['image/jpeg', 'image/png', 'image/gif'];
-                if (in_array($image['type'], $allowed_types)) {
-                    $upload_dir = __DIR__ . '/../uploads/posts/';
-                    if (!file_exists($upload_dir)) {
-                        mkdir($upload_dir, 0777, true);
-                    }
-                    
-                    $file_extension = pathinfo($image['name'], PATHINFO_EXTENSION);
-                    $new_filename = uniqid() . '.' . $file_extension;
-                    $upload_path = $upload_dir . $new_filename;
-                    
-                    if (move_uploaded_file($image['tmp_name'], $upload_path)) {
-                        $image_url = '/uploads/posts/' . $new_filename;
-                    } else {
-                        throw new Exception("Failed to upload image");
-                    }
-                } else {
+                $max_size = 5 * 1024 * 1024; // 5MB
+                
+                if (!in_array($image['type'], $allowed_types)) {
                     throw new Exception("Invalid image type. Only JPG, PNG, and GIF are allowed.");
+                }
+                if ($image['size'] > $max_size) {
+                    throw new Exception("Image size must be less than 5MB.");
+                }
+
+                $upload_dir = __DIR__ . '/../uploads/posts/';
+                if (!file_exists($upload_dir)) {
+                    mkdir($upload_dir, 0777, true);
+                    // Set proper permissions
+                    chmod($upload_dir, 0777);
+                }
+                
+                $file_extension = strtolower(pathinfo($image['name'], PATHINFO_EXTENSION));
+                $new_filename = uniqid() . '.' . $file_extension;
+                $upload_path = $upload_dir . $new_filename;
+                
+                if (move_uploaded_file($image['tmp_name'], $upload_path)) {
+                    // Set proper permissions on the uploaded file
+                    chmod($upload_path, 0644);
+                    $image_url = '/uploads/posts/' . $new_filename;
+                } else {
+                    throw new Exception("Failed to upload image");
                 }
             }
 
@@ -103,7 +112,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-group">
                 <label for="image">Image (Optional)</label>
                 <input type="file" class="form-control" id="image" name="image" accept="image/jpeg,image/png,image/gif">
-                <small class="form-text text-muted">Supported formats: JPG, PNG, GIF</small>
+                <small class="form-text text-muted">Supported formats: JPG, PNG, GIF. Maximum size: 5MB</small>
             </div>
 
             <button type="submit" class="btn btn-primary">Create Post</button>

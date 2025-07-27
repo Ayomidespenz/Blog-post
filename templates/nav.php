@@ -1,6 +1,6 @@
 <?php
 // Check if user is logged in
-$logged_in = isset($_SESSION['user_id']);
+$logged_in = isset($_SESSION['user_id']) && !empty($_SESSION['user_id']);
 ?>
 <style>
     :root {
@@ -52,7 +52,7 @@ $logged_in = isset($_SESSION['user_id']);
     .btn-outline-light:hover {
         background-color: var(--nav-hover);
         border-color: var(--nav-hover) !important;
-        color: white !important;
+        color: black !important;
     }
 
     .navbar-toggler {
@@ -90,37 +90,40 @@ $logged_in = isset($_SESSION['user_id']);
                 <li class="nav-item">
                     <a class="nav-link" href="index.php">Home</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="dashboard.php">Dashboard</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="post_create.php">Create Post</a>
-                </li>
+                <?php if ($logged_in): ?>
+                    <li class="nav-item">
+                        <a class="nav-link" href="dashboard.php">Dashboard</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="post_create.php">Create Post</a>
+                    </li>
+                <?php endif; ?>
                 <li class="nav-item">
                     <a class="nav-link" href="https://news.google.com" target="_blank" rel="noopener noreferrer">
-                        <i class="fas fa-fire"></i> Trending
+                        News
                     </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#about">About</a>
                 </li>
             </ul>
             <ul class="navbar-nav">
                 <?php if ($logged_in): ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="dashboard.php">
-                            <i class="fas fa-user"></i> <?php echo htmlspecialchars($_SESSION['username']); ?>
+                        <a class="nav-link" href="profile.php">
+                            <?php 
+                            $profile_pic = isset($_SESSION['profile_picture']) ? $_SESSION['profile_picture'] : 'default-avatar.png';
+                            echo '<img src="' . htmlspecialchars($profile_pic) . '" alt="Profile" class="rounded-circle" style="width: 30px; height: 30px; object-fit: cover; margin-right: 8px;">';
+                            echo htmlspecialchars($_SESSION['username']);
+                            ?>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="logout.php">Logout</a>
+                        <a class="btn btn-outline-light" href="logout.php">Logout</a>
                     </li>
                 <?php else: ?>
                     <li class="nav-item">
-                        <a class="nav-link" href="login.php">Login</a>
+                        <a class="btn btn-outline-light" href="login.php">Login</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="register.php">Register</a>
+                        <a class="btn btn-outline-light ms-2" href="register.php">Register</a>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -128,5 +131,5 @@ $logged_in = isset($_SESSION['user_id']);
     </div>
 </nav>
 
-<!-- Add padding to prevent content from being hidden under fixed navbar -->
+
 <div style="padding-top: 76px;"></div>

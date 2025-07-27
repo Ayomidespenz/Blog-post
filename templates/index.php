@@ -225,7 +225,7 @@ $posts = mysqli_query($conn, $query);
                 
                 <div class="col-lg-6">
                     <div class="about-image-container">
-                        <img src="https://images.unsplash.com/photo-1512314889306-cc270ca1418a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80" 
+                        <img src="../elon.jpeg" 
                              alt="People sharing ideas" 
                              class="img-fluid rounded shadow-lg">
                     </div>
@@ -299,10 +299,11 @@ $posts = mysqli_query($conn, $query);
                                 </div>
                             </div>
 
-                            <?php if ($post['image_url']): ?>
+                            <?php if (!empty($post['image_url'])): ?>
                                 <img src="<?php echo htmlspecialchars($post['image_url']); ?>" 
                                      alt="Post image" 
-                                     class="post-image">
+                                     class="post-image"
+                                     onerror="this.src='/uploads/default-post-image.png'; this.onerror=null;">
                             <?php endif; ?>
 
                             <div class="post-content">
@@ -357,7 +358,7 @@ $posts = mysqli_query($conn, $query);
             </div>
             <hr>
             <div class="text-center mt-3">
-                <p class="mb-0">&copy; <?php echo date('Y'); ?> Dail-Gist. All rights reserved.</p>
+                <p class="mb-0">&copy; <?php echo date('Y'); ?> Daily-Gist. All rights reserved.</p>
             </div>
         </div>
     </footer>
